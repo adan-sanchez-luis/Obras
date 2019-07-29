@@ -239,7 +239,7 @@ public class PrincipalOriginal extends JFrame {
         Object[][] datos = new Object[getTotalFilas(consulta)][8];
         try {
             Statement stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery(consulta);
+            ResultSet rs = stmt.executeQuery(consulta); 
             int i = 0;
             try{
             while (rs.next()) {

@@ -382,7 +382,7 @@ public class EditarObra extends JFrame {
         recargar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                java.util.List<Object> auxiliar = recuperarDatos("SELECT * FROM CLIENTE", 2);
+                java.util.List<Object> auxiliar = recuperarDatos("SELECT * FROM CLIENTE", "NOMBRE_CLIENTE");
                 JComboBox aux = new JComboBox(auxiliar.toArray());
                 clienteCEditado.removeAllItems();
                 while (!auxiliar.isEmpty()) {

@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -22,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class NuevoAgregarObra extends JFrame {
 
     Connection conexion;
+    JLabel imagen;
 
     NuevoAgregarObra() {
         conexion = getConexion();
@@ -355,6 +359,21 @@ public class NuevoAgregarObra extends JFrame {
                 int disponibles = Integer.parseInt(cantidadfinalNueva == null ? "0" : (String) cantidadfinalNueva);
                 CantidadSpiner.setModel(new SpinnerNumberModel(0, 0, disponibles, 1));
                 agregarMaquinaria.setEnabled(false);
+                String consultaImagenNueva = "SELECT TIPO_MAQ,IMAGEN_MAQ FROM Maquinaria"
+                        + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem()
+                        + "'GROUP BY TIPO_MAQ,IMAGEN_MAQ";
+                //Para que la imagen se redimensione
+                ImageIcon foto = getImagen(consultaImagenNueva, "IMAGEN_MAQ");
+                System.out.println(foto);
+                //panel imagen es la etiqueta donde se pondra
+                if (foto != null) {                    
+                    Image foton = foto.getImage().getScaledInstance(imagen.getWidth(), imagen.getHeight(), Image.SCALE_DEFAULT);
+                    foto = new ImageIcon(foton);
+                    imagen.setIcon(foto);
+                } else {
+                    imagen.removeAll();
+                    imagen.setText("No Existe una Imagen el la base de Datos");
+                }
             }
         });
 
@@ -372,11 +391,25 @@ public class NuevoAgregarObra extends JFrame {
             }
         });
 
-        JPanel imagen = new JPanel();
-        imagen.setBackground(Color.decode("#049cff"));
+        String consultaImagen = "SELECT TIPO_MAQ,MODELO_MAQ,IMAGEN_MAQ FROM Maquinaria"
+                + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
+                + "GROUP BY TIPO_MAQ,MODELO_MAQ,IMAGEN_MAQ";
+        imagen = new JLabel(getImagen(consultaImagen, "IMAGEN_MAQ"));
+        //imagen.setBackground(Color.decode("#049cff"));
         //imagen.setBounds(950, 400, 400, 200);
         imagen.setBounds(850, 400, 200, 200);
         DatosObras.add(imagen);
+
+        //Para que la imagen se redimensione
+        ImageIcon foto = getImagen(consultaImagen, "IMAGEN_MAQ");
+        //panel imagen es la etiqueta donde se pondra
+        Image foton = foto.getImage().getScaledInstance(imagen.getWidth(), imagen.getHeight(), Image.SCALE_DEFAULT);
+        foto = new ImageIcon(foton);
+        if (foto != null) {
+            imagen.setIcon(foto);
+        } else {
+            imagen.setText("No Existe una Imagen el la base de Datos");
+        }
 
         DefaultListModel<String> lista = new DefaultListModel();
         JList<String> list = new JList<>(lista);
@@ -611,6 +644,28 @@ public class NuevoAgregarObra extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al recuperar los datos de la base de datos\n" + e.toString());
         }
         return datos;
+    }
+
+    /**
+     * **********METODO QUE DEVUELVE UN IMAGE ICON*
+     */
+    public ImageIcon getImagen(String consulta, String columna) {
+        ImageIcon ic = null;
+        InputStream is = null;
+        try {
+            Statement stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(consulta);
+            if (rs.next()) {
+                try {
+                    is = rs.getBinaryStream(columna);
+                } catch (Exception ex) {
+                }
+                BufferedImage bi = ImageIO.read(is);
+                ic = new ImageIcon(bi);
+            }
+        } catch (Exception e) {
+        }
+        return ic;
     }
 
     public static void main(String[] args) {
