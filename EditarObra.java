@@ -234,7 +234,7 @@ public class EditarObra extends JFrame {
         cp.setBounds(443, 190, 300, 20);
         DatosObras.add(cp);
 
-        CampoDato cptxt = new CampoDato();
+        CampoDato cptxt = new CampoDato(datosRecuperados[9]);
         cptxt.setForeground(Color.black);
         cptxt.setBounds(480, 190, 50, 30);
         cptxt.setBorder(null);
@@ -349,15 +349,18 @@ public class EditarObra extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
                 String consultaCliente = "SELECT * FROM CLIENTE WHERE NOMBRE_CLIENTE = '" + clienteCEditado.getSelectedItem() + "'";
-                int Cliente = Integer.parseInt(recuperarDato(consultaCliente, "IDCLIENTE"));
-                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = " + id_Obra;
-                int Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVEOB"));
+                int idCliente = Integer.parseInt(recuperarDato(consultaCliente, "IDCLIENTE"));
+                //String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = " + id_Obra;
+                //int Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVEOB"));
                 String EditarObra = "UPDATE OBRA SET "
-                        + "NOMBRE_OBRA='" + NombreObraEditartxt.getText() + "',NOMBRE_EMPRESA=" + empresatxtEditar.getText()
-                        + ",NOMBRE_RESPONSABLE=" + NombreResponsabletxtEditar.getText() + ",AP_PAT=" + ApellidoResponsablePaternotxtEditar.getText()
-                        + ",AP_MAT=" + ApellidoResponsableMaternotxtEditar.getText() + ",FECHA_INICIO=" + ff.format(FechaIEditar.getDate())
-                        + ",FECHA_FIN=" + ff.format(FechaFEditar.getDate()) + ",INVERSION=" + MontotxtEditar.getText() + ",ID_CLIENTE=" + Cliente
-                        + ",TELEFONO=" + TelefonotxtEditar.getText() + "\nwhere CLAVEOB=" + Obra;
+                        + "NOMBRE_OBRA='" + NombreObraEditartxt.getText() + "',NOMBRE_CLIENTE='" + clienteCEditado.getSelectedItem()
+                        + "',NOMBRE_RESPONSABLE='" + NombreResponsabletxtEditar.getText() + "',AP_PAT='" + ApellidoResponsablePaternotxtEditar.getText()
+                        + "',AP_MAT='" + ApellidoResponsableMaternotxtEditar.getText() + "',CALLE_OBRA='" + CalletxtEditar.getText()
+                        + "',NUMERO_CALLE=" + NumtxtEditar.getText() + ",COLONIA='" + ColtxtEditar.getText()+ "',MUNICIPIO='" + MunicipiotxtEditar.getText() 
+                        + "',CP=" + cptxt.getText() + ",ESTADO='" + EstadotxtEditar.getText() + "',FECHA_INICIO=" + ff.format(FechaIEditar.getDate())
+                        + ",FECHA_FIN=" + ff.format(FechaFEditar.getDate()) + ",INVERSION=" + MontotxtEditar.getText() + ",TELEFONO_RESP=" + TelefonotxtEditar.getText()
+                        + ",CORREO_RESP='" + CorreotxtEditar.getText() + "',IDCLIENTE=" + idCliente
+                        + " where CLAVE_OBRA=" + id_Obra;
                 try {
                     Connection con = getConexion();
                     Statement stmt = (Statement) con.createStatement();

@@ -84,7 +84,7 @@ public class PrincipalOriginal extends JFrame {
         Obras.setLayout(null);
         Obras.setBackground(Color.black);
 
-        String[] Cabecera = {"NOMBRE DE LA OBRA", "NOMBRE DEL RESPONSABLE", "FECHA DE INICIO", "FECHA DE FINALIZACIÓN", "NÚMERO DEL RESPONSABLE", "INVERSIÓN $", "NOMBRE DE LA EMPRESA", "NUM DE MÁQUINAS RENTADAS"};
+        String[] Cabecera = {"NOMBRE DE LA OBRA", "NOMBRE DEL RESPONSABLE", "FECHA DE INICIO", "FECHA DE FINALIZACIÓN", "NÚMERO DEL RESPONSABLE", "INVERSIÓN $", "NOMBRE DEL CLIENTE", "NUM DE MÁQUINAS RENTADAS"};
         String consulta = "SELECT * FROM OBRA";
         //String[][] datos = {{"Carretera Esmeralda", "Juan de Dios", "01/02/16", "01/03/16", "9566162", "100,000", "Construcciones El chapo", "3"}};
         DefaultTableModel modelo = new DefaultTableModel(recuperarDatosObra(consulta), Cabecera) {
