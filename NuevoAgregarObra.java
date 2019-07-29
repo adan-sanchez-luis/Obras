@@ -231,7 +231,7 @@ public class NuevoAgregarObra extends JFrame {
         Estadotxt.setTipo('T');
         Estadotxt.setLongitud(30);
         DatosObras.add(Estadotxt);
-        
+
         JLabel cp = new JLabel("CP:");
         cp.setForeground(Color.white);
         Font fontcp = new Font("Arial", Font.BOLD, 20);
@@ -387,10 +387,14 @@ public class NuevoAgregarObra extends JFrame {
         agregarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                if (!list.isSelectionEmpty()) {
+                    int actualizar = list.getSelectedIndex();
+                    lista.remove(actualizar);
+                }
                 String tipo = (String) TipoMC.getSelectedItem();
                 String modelo = (String) MaquinariaC.getSelectedItem();
                 int cantidad = (int) CantidadSpiner.getValue();
-                lista.addElement(String.format("%s    /     %s    /     %d", tipo, modelo, cantidad));
+                lista.addElement(String.format("%s     /     %s     /     %d", tipo, modelo, cantidad));
 
                 SpinnerNumberModel aux = (SpinnerNumberModel) CantidadSpiner.getModel();
                 int menos = (int) aux.getMaximum() - (int) CantidadSpiner.getValue();
@@ -398,6 +402,35 @@ public class NuevoAgregarObra extends JFrame {
                 if ((int) CantidadSpiner.getValue() == 0) {
                     agregarMaquinaria.setEnabled(false);
                 }
+            }
+        });
+
+        editarMaquinaria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String modi[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                for (int i = 0; i < modi.length; i++) {
+                    System.out.println(modi[i]);
+                }
+                for (int i = 0; i < allTipos.size(); i++) {
+                    if (allTipos.get(i).equals(modi[0])) {
+                        TipoMC.setSelectedIndex(i);
+                    }
+                }
+                String consultaModelosNueva = "SELECT MODELO_MAQ FROM Maquinaria WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' GROUP BY MODELO_MAQ";
+                List<Object> auxiliar = recuperarDatos(consultaModelosNueva, "MODELO_MAQ");
+                MaquinariaC.setModel(new DefaultComboBoxModel(auxiliar.toArray()));
+                for (int i = 0; i < auxiliar.size(); i++) {
+                    if (auxiliar.get(i).equals(modi[1])) {
+                        MaquinariaC.setSelectedIndex(i);
+                    }
+                }
+                String consultaCantidadNueva = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM Maquinaria"
+                        + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
+                        + "GROUP BY TIPO_MAQ,MODELO_MAQ";
+                Object cantidadFinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
+                int disonibles = Integer.parseInt(cantidadFinalNueva == null ? "0" : (String) cantidadFinalNueva);
+                CantidadSpiner.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
             }
         });
 
@@ -460,12 +493,12 @@ public class NuevoAgregarObra extends JFrame {
                             + "FECHA_FIN,INVERSION,TELEFONO_RESP,CORREO_RESP,IDCLIENTE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
                     psd.setString(1, NombreObratxt.getText());//nombre obra
-                    psd.setString(2, (String)clienteC.getSelectedItem());//nombre empresa
+                    psd.setString(2, (String) clienteC.getSelectedItem());//nombre empresa
                     psd.setString(3, NombreResponsabletxt.getText());//nombre responsable
                     psd.setString(4, ApellidoResponsablePaternotxt.getText());//apellido paterno responsable
                     psd.setString(5, ApellidoResponsableMaternotxt.getText());//apellido materno responsable
                     psd.setString(6, Calletxt.getText());//calle de la obra
-                    psd.setString(7, Numtxt.getText().isEmpty()?"S/N":Numtxt.getText());//numero de la calle donde esta la obra
+                    psd.setString(7, Numtxt.getText().isEmpty() ? "S/N" : Numtxt.getText());//numero de la calle donde esta la obra
                     psd.setString(8, Coltxt.getText());//colonia donde esta la obra
                     psd.setString(9, Municipiotxt.getText());//municipio donde esta la obra
                     psd.setString(10, cptxt.getText());//cp donde se ubica la obra

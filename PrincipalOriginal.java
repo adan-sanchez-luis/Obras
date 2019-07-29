@@ -241,6 +241,7 @@ public class PrincipalOriginal extends JFrame {
             Statement stmt = conexion.createStatement();
             ResultSet rs = stmt.executeQuery(consulta);
             int i = 0;
+            try{
             while (rs.next()) {
                 datos[i][0] = rs.getString(2);//nombre de la obra
                 datos[i][1] = rs.getString(4) + " " + rs.getString(5) + " " + rs.getString(6);//nombre del responsable
@@ -251,6 +252,8 @@ public class PrincipalOriginal extends JFrame {
                 datos[i][6] = rs.getString(3);//nombre de la empresa
                 //datos[i][7]=String.valueOf(rs.getInt(11));//numero de maquinarias rentadas
                 i++;
+            }}catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "No hay registros");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al recuperar los datos de la base de datos\n" + e.toString());
