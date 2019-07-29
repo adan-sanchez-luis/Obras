@@ -155,8 +155,9 @@ public class PrincipalOriginal extends JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int fila = OrasT.getSelectedRow();
-                String obra = (String) OrasT.getValueAt(fila, 0);
-                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + obra + "'";
+                String nombreObra = (String) OrasT.getValueAt(fila, 0);
+                String nombreCliente=(String)OrasT.getValueAt(fila, 6);
+                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='"+nombreCliente+"'";
                 int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
                 new EditarObra(id_Obra);
             }
@@ -172,7 +173,18 @@ public class PrincipalOriginal extends JFrame {
         Eliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-
+                int fila = OrasT.getSelectedRow();
+                String nombreObra = (String) OrasT.getValueAt(fila, 0);
+                String nombreCliente=(String)OrasT.getValueAt(fila, 6);
+                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='"+nombreCliente+"'";
+                int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
+                    String eliminar = "DELETE FROM OBRA WHERE CLAVE_OBRA = " + id_Obra;
+                try {
+                    Statement stmt = (Statement) conexion.createStatement();
+                    stmt.executeUpdate(eliminar);
+                } catch (Exception ex) {
+                    System.err.println("Error al insertar " + ex);
+                }
             }
         });
         return Obras;

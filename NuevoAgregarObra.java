@@ -146,7 +146,6 @@ public class NuevoAgregarObra extends JFrame {
 
         //se rellena el comboBox con los clientes ya registrados
         List<Object> allClientes = recuperarDatos("SELECT * FROM CLIENTE", "NOMBRE_CLIENTE");
-        System.out.println(allClientes);
         JComboBox clienteC = new JComboBox(allClientes.toArray());
         clienteC.setForeground(Color.black);
         clienteC.setBorder(null);
