@@ -352,18 +352,19 @@ public class EditarObra extends JFrame {
                 int idCliente = Integer.parseInt(recuperarDato(consultaCliente, "IDCLIENTE"));
                 //String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = " + id_Obra;
                 //int Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVEOB"));
+                String auxNumeroEdit=NumtxtEditar.getText().equals("S/N")?"\"S/N\"":NumtxtEditar.getText();
                 String EditarObra = "UPDATE OBRA SET "
                         + "NOMBRE_OBRA='" + NombreObraEditartxt.getText() + "',NOMBRE_CLIENTE='" + clienteCEditado.getSelectedItem()
                         + "',NOMBRE_RESPONSABLE='" + NombreResponsabletxtEditar.getText() + "',AP_PAT='" + ApellidoResponsablePaternotxtEditar.getText()
                         + "',AP_MAT='" + ApellidoResponsableMaternotxtEditar.getText() + "',CALLE_OBRA='" + CalletxtEditar.getText()
-                        + "',NUMERO_CALLE=" + NumtxtEditar.getText() + ",COLONIA='" + ColtxtEditar.getText()+ "',MUNICIPIO='" + MunicipiotxtEditar.getText() 
-                        + "',CP=" + cptxt.getText() + ",ESTADO='" + EstadotxtEditar.getText() + "',FECHA_INICIO=" + ff.format(FechaIEditar.getDate())
-                        + ",FECHA_FIN=" + ff.format(FechaFEditar.getDate()) + ",INVERSION=" + MontotxtEditar.getText() + ",TELEFONO_RESP=" + TelefonotxtEditar.getText()
+                        + "',NUMERO_CALLE=" + auxNumeroEdit + ",COLONIA='" + ColtxtEditar.getText()+ "',MUNICIPIO='" + MunicipiotxtEditar.getText() 
+                        + "',CP=" + cptxt.getText() + ",ESTADO='" + EstadotxtEditar.getText() + "',FECHA_INICIO='" + ff.format(FechaIEditar.getDate())
+                        + "',FECHA_FIN='" + ff.format(FechaFEditar.getDate()) + "',INVERSION=" + MontotxtEditar.getText() + ",TELEFONO_RESP=" + TelefonotxtEditar.getText()
                         + ",CORREO_RESP='" + CorreotxtEditar.getText() + "',IDCLIENTE=" + idCliente
                         + " where CLAVE_OBRA=" + id_Obra;
+                System.out.println(EditarObra);
                 try {
-                    Connection con = getConexion();
-                    Statement stmt = (Statement) con.createStatement();
+                    Statement stmt = (Statement) conexion.createStatement();
                     stmt.executeUpdate(EditarObra);
                 } catch (SQLException ex) {
                     System.err.println("Error al insertar " + ex);
