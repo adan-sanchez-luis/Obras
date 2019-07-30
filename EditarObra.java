@@ -523,6 +523,18 @@ public class EditarObra extends JFrame {
                 CantidadSpinerEditar.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
             }
         });
+        
+        //elimina el registro selecciondado
+        eliminarMaquinaria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    lista.remove(list.getSelectedIndex());
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Seleccione un registro de la lista");
+                }
+            }
+        });
 
         CantidadSpinerEditar.addChangeListener(new ChangeListener() {
             @Override

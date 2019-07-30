@@ -524,12 +524,13 @@ public class NuevoAgregarObra extends JFrame {
                 }
             }
         });
-        
+
+        //elimina el registro selecciondado
         eliminarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
-                    
+                    lista.remove(list.getSelectedIndex());
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Seleccione un registro de la lista");
                 }
@@ -591,7 +592,7 @@ public class NuevoAgregarObra extends JFrame {
                 SimpleDateFormat ff = new SimpleDateFormat("YYYY-MM-dd");
                 try {
                     PreparedStatement psd; // variable para la BDD
-                    // primer consulta a la tabla OBRA --->
+                    //consulta a la tabla OBRA --->
                     psd = conexion.prepareStatement("INSERT INTO OBRA (NOMBRE_OBRA,NOMBRE_CLIENTE,NOMBRE_RESPONSABLE,AP_PAT,AP_MAT,"
                             + "CALLE_OBRA,NUMERO_CALLE,COLONIA,MUNICIPIO,CP,ESTADO,FECHA_INICIO,"
                             + "FECHA_FIN,INVERSION,TELEFONO_RESP,CORREO_RESP,IDCLIENTE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -617,11 +618,45 @@ public class NuevoAgregarObra extends JFrame {
                     int id = Integer.parseInt(recuperarDato(consulta, "IDCLIENTE"));
                     psd.setInt(17, id);//id del cliente
 
-                    //PreparedStatement segundaConexiuon=cn.prepareStatement("INSERT INTO MAQUINARIA (ESTADO_MAQ) VALUES ('EN USO')");
-                    //String modicar[] = list.getSelectedValue().replaceAll(" ", "").split("/");
                     int res = psd.executeUpdate();
                     if (res < 0) {
                         JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
+                    }
+
+                    String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + NombreObratxt.getText()
+                            + "' AND NOMBRE_CLIENTE='" + clienteC.getSelectedItem() + "'";
+                    int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
+                    System.out.println(id_Obra);
+                    for (int i = 0; i < lista.size(); i++) {
+                        list.setSelectedIndex(i);
+                        String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                        for (int j = 0; j < filaLista.length; j++) {
+                            System.out.println(filaLista[j]);
+                        }
+                        int repeticiones = Integer.parseInt(filaLista[2]);
+                        int repeticion = 1;
+                        while (repeticion <= repeticiones) {
+                            String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
+                                    + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
+                            System.out.println(recuperarIdMaquina);
+                            int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));                            
+                            PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
+                            psd2.setString(1, String.valueOf(idMaquina));
+                            psd2.setString(2, String.valueOf(id_Obra));                            
+                            int res2 = psd2.executeUpdate();
+                            if (res2 < 0) {
+                                JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
+                            }
+                            String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
+                            System.out.println(actualizarEstado);
+                            try {
+                                Statement stmt = (Statement) conexion.createStatement();
+                                stmt.executeUpdate(actualizarEstado);
+                            } catch (SQLException ex) {
+                                System.err.println("Error al insertar " + ex);
+                            }
+                            repeticion++;
+                        }
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(NuevoAgregarObra.class.getName()).log(Level.SEVERE, null, ex);
