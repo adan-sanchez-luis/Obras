@@ -20,22 +20,22 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 
 public class PrincipalOriginal extends JFrame {
-    
+
     Connection conexion;
-    
+
     PrincipalOriginal() {
         conexion = getConexion();
         setSize(1366, 768);
         setTitle("Sistema de gestion de maquinaria");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-        
+
         JPanel principal = new JPanel();
         principal.setLayout(null);
-        
+
         principal.setBackground(Color.black);
         principal.setBounds(0, 115, 1366, 768);
-        
+
         ImageIcon background_image = new ImageIcon("C:\\Users\\Adan Sanchez\\Documents\\NetBeansProjects\\Fun_Ing_Soft\\src\\neo3.jpg");
         Image img = background_image.getImage();
         Image temp_img = img.getScaledInstance(1366, 768, Image.SCALE_SMOOTH);
@@ -56,13 +56,13 @@ public class PrincipalOriginal extends JFrame {
         tabla.addTab("Obras", Obras());
         tabla.addTab("Clientes", Clientes());
         tabla.addTab("Finanzas", Finanzas());
-        
+
     }
-    
+
     public static void main(String[] args) {
         new PrincipalOriginal();
     }
-    
+
     public JPanel bienvenido() {
         JPanel bienvenido = new JPanel();
         bienvenido.setLayout(null);
@@ -70,20 +70,20 @@ public class PrincipalOriginal extends JFrame {
         bienvenido.setBackground(Color.black);
         return bienvenido;
     }
-    
+
     public JPanel Maquinaria() {
         JPanel Maquinas = new JPanel();
         Maquinas.setLayout(null);
         Maquinas.setBackground(Color.black);
         return Maquinas;
-        
+
     }
-    
+
     public JPanel Obras() {
         JPanel Obras = new JPanel();
         Obras.setLayout(null);
         Obras.setBackground(Color.black);
-        
+
         String[] Cabecera = {"NOMBRE DE LA OBRA", "NOMBRE DEL RESPONSABLE", "FECHA DE INICIO", "FECHA DE FINALIZACIÓN", "NÚMERO DEL RESPONSABLE", "INVERSIÓN $", "NOMBRE DEL CLIENTE"};
         String consulta = "SELECT * FROM OBRA";
         DefaultTableModel modelo = new DefaultTableModel(recuperarDatosObra(consulta), Cabecera) {
@@ -103,7 +103,7 @@ public class PrincipalOriginal extends JFrame {
         sc.setVisible(true);
         sc.setBounds(10, 70, 1336, 410);
         Obras.add(sc);
-        
+
         JTextField busqueda = new JTextField();
         busqueda.setForeground(Color.black);
         busqueda.setBounds(463, 15, 400, 30);
@@ -171,7 +171,7 @@ public class PrincipalOriginal extends JFrame {
                 }
             }
         });
-        
+
         JButton Eliminar = new JButton("Eliminar");
         Eliminar.setBackground(Color.black);
         Eliminar.setBorder(new ComponenteBotonRedondo(40));
@@ -205,14 +205,14 @@ public class PrincipalOriginal extends JFrame {
         });
         return Obras;
     }
-    
+
     public JPanel Clientes() {
         JPanel Clientes = new JPanel();
         Clientes.setLayout(null);
         Clientes.setBackground(Color.black);
         return Clientes;
     }
-    
+
     public JPanel Finanzas() {
         JPanel Finanzas = new JPanel();
         Finanzas.setBackground(Color.black);
@@ -229,14 +229,14 @@ public class PrincipalOriginal extends JFrame {
             Class.forName("com.mysql.jdbc.Driver");
             con = (Connection) DriverManager.getConnection("jdbc:mysql://ns64.hostgator.mx:3306/dirtycod_constructora?autoReconnect=true&useSSL=false", "dirtycod_dirty", "dirtycode");
             System.out.println("Se concecto Correctamente ");
-            
+
         } catch (Exception e) {
             System.err.println("Hubo un error en la instalacion " + e);
         }
         return con;
-        
+
     }
-    
+
     //recupera un dato en espesifico de la base de datos
     public String recuperarDato(String consulta, String columna) {
         String dato = null;
@@ -251,13 +251,13 @@ public class PrincipalOriginal extends JFrame {
         }
         return dato;
     }
-    
+
     //recupera todos los registros de las obras de la base de datos
     public Object[][] recuperarDatosObra(String consulta) {
         Object[][] datos = new Object[getTotalFilas(consulta)][8];
         try {
             Statement stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery(consulta);            
+            ResultSet rs = stmt.executeQuery(consulta);
             int i = 0;
             try {
                 while (rs.next()) {
@@ -278,7 +278,7 @@ public class PrincipalOriginal extends JFrame {
         }
         return datos;
     }
-    
+
     public int getTotalFilas(String consulta) {
         int count = 0;
         try {

@@ -17,6 +17,9 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -331,7 +334,7 @@ public class EditarObra extends JFrame {
         editarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
         editarMaquinaria.setForeground(Color.decode("#049cff"));
         DatosObras.add(editarMaquinaria);
-        
+
         //boton para eliminar  la maquinaria  de la lista
         JButton eliminarMaquinaria = new JButton("Eliminar");
         eliminarMaquinaria.setBackground(Color.black);
@@ -467,7 +470,40 @@ public class EditarObra extends JFrame {
         list.setBounds(1100, 400, 250, 200);
         DatosObras.add(list);
 
-        //se agrega a una lista las maquinas requeridas 
+        String consultaDatosMaq_obra_insumo = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM OBRA_MAQ_INSUMO NATURAL JOIN Maquinaria WHERE CLAVE_OBRA = " + id_Obra
+                + " GROUP BY TIPO_MAQ,MODELO_MAQ";
+        String[][] allDatosMaq_obra_insumo = recuperarDatosLista(consultaDatosMaq_obra_insumo);
+        for (int i = 0; i < getTotalFilas(consultaDatosMaq_obra_insumo); i++) {
+            String tipo = allDatosMaq_obra_insumo[i][0];
+            String modelo = allDatosMaq_obra_insumo[i][1];
+            String cantidad = allDatosMaq_obra_insumo[i][2];
+            lista.addElement(String.format("%-20s/     %-20s/     %s", tipo, modelo, cantidad));
+        }
+        
+        String consultaIdMaq_obra_insumo = "SELECT * FROM OBRA_MAQ_INSUMO NATURAL JOIN Maquinaria WHERE CLAVE_OBRA = " + id_Obra;
+        java.util.List<Object> allMaquinas = recuperarDatos(consultaIdMaq_obra_insumo, "CLAVE_MAQ");
+        int[] idMaquinasUsadas = new int[allMaquinas.size()];
+        for (int i = 0; i < allMaquinas.size(); i++) {
+            idMaquinasUsadas[i] = Integer.parseInt((String) allMaquinas.get(i));
+            String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'DISPONIBLE' where CLAVE_MAQ=" + idMaquinasUsadas[i];
+            try {
+                Statement stmt = (Statement) conexion.createStatement();
+                stmt.executeUpdate(actualizarEstado);
+            } catch (SQLException ex) {
+                System.err.println("Error al insertar " + ex);
+            }
+        }
+        
+        for (int i = 0; i < idMaquinasUsadas.length; i++) {
+            String eliminar = "DELETE FROM OBRA_MAQ_INSUMO WHERE CLAVE_OBRA = " + id_Obra + " AND CLAVE_MAQ="+idMaquinasUsadas[i];
+            try {
+                Statement stmt = (Statement) conexion.createStatement();
+                stmt.executeUpdate(eliminar);
+            } catch (Exception ex) {
+                System.err.println("Error al eliminar " + ex);
+            }
+        }
+
         agregarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -523,7 +559,7 @@ public class EditarObra extends JFrame {
                 CantidadSpinerEditar.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
             }
         });
-        
+
         //elimina el registro selecciondado
         eliminarMaquinaria.addActionListener(new ActionListener() {
             @Override
@@ -609,6 +645,37 @@ public class EditarObra extends JFrame {
                 } catch (SQLException ex) {
                     System.err.println("Error al insertar " + ex);
                 }
+                    for (int i = 0; i < lista.size(); i++) {
+                        list.setSelectedIndex(i);
+                        String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                        int repeticiones = Integer.parseInt(filaLista[2]);
+                        int repeticion = 1;
+                        while (repeticion <= repeticiones) {
+                            try {
+                                String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
+                                        + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
+                                int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));
+                                PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
+                                psd2.setString(1, String.valueOf(idMaquina));
+                                psd2.setString(2, String.valueOf(id_Obra));
+                                int res2 = psd2.executeUpdate();
+                                if (res2 < 0) {
+                                    JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
+                                }
+                                String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
+                                try {
+                                    Statement stmt = (Statement) conexion.createStatement();
+                                    stmt.executeUpdate(actualizarEstado);
+                                } catch (SQLException ex) {
+                                    System.err.println("Error al insertar " + ex);
+                                }
+                                repeticion++;
+                            } catch (SQLException ex) {
+                                Logger.getLogger(EditarObra.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+
             }
         });
 
@@ -637,7 +704,6 @@ public class EditarObra extends JFrame {
         return dato;
     }
 
-    
     //recupera una lista de datos de la bsae de datos de solo una columna
     public java.util.List<Object> recuperarDatos(String consulta, String columna) {
         java.util.List<Object> datos = new ArrayList<Object>();
@@ -703,5 +769,41 @@ public class EditarObra extends JFrame {
         } catch (Exception e) {
         }
         return ic;
+    }
+
+    public String[][] recuperarDatosLista(String consulta) {
+        String[][] datos = new String[getTotalFilas(consulta)][3];
+        try {
+            Statement stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(consulta);
+            int i = 0;
+            try {
+                while (rs.next()) {
+                    datos[i][0] = rs.getString(1);//tipo maquina
+                    datos[i][1] = rs.getString(2);//modelo maquina
+                    datos[i][2] = String.valueOf(rs.getInt(3));//disponibles
+                    i++;
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "No hay registros 22222");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al recuperar los datos de la base de datos\n" + e.toString());
+        }
+        return datos;
+    }
+
+    public int getTotalFilas(String consulta) {
+        int count = 0;
+        try {
+            Statement stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(consulta);
+            while (rs.next()) {
+                count += 1;
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar " + e);
+        }
+        return count;
     }
 }

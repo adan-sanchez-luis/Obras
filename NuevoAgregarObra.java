@@ -626,19 +626,14 @@ public class NuevoAgregarObra extends JFrame {
                     String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + NombreObratxt.getText()
                             + "' AND NOMBRE_CLIENTE='" + clienteC.getSelectedItem() + "'";
                     int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
-                    System.out.println(id_Obra);
                     for (int i = 0; i < lista.size(); i++) {
                         list.setSelectedIndex(i);
                         String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
-                        for (int j = 0; j < filaLista.length; j++) {
-                            System.out.println(filaLista[j]);
-                        }
                         int repeticiones = Integer.parseInt(filaLista[2]);
                         int repeticion = 1;
                         while (repeticion <= repeticiones) {
                             String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
                                     + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
-                            System.out.println(recuperarIdMaquina);
                             int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));                            
                             PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
                             psd2.setString(1, String.valueOf(idMaquina));
@@ -648,7 +643,6 @@ public class NuevoAgregarObra extends JFrame {
                                 JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
                             }
                             String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
-                            System.out.println(actualizarEstado);
                             try {
                                 Statement stmt = (Statement) conexion.createStatement();
                                 stmt.executeUpdate(actualizarEstado);
