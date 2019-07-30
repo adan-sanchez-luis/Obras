@@ -331,6 +331,16 @@ public class EditarObra extends JFrame {
         editarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
         editarMaquinaria.setForeground(Color.decode("#049cff"));
         DatosObras.add(editarMaquinaria);
+        
+        //boton para eliminar  la maquinaria  de la lista
+        JButton eliminarMaquinaria = new JButton("Eliminar");
+        eliminarMaquinaria.setBackground(Color.black);
+        eliminarMaquinaria.setBounds(1020, 360, 200, 30);
+        Font fontEliminar = new Font("Arial", Font.BOLD, 20);
+        eliminarMaquinaria.setFont(fontEliminar);
+        eliminarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
+        eliminarMaquinaria.setForeground(Color.decode("#049cff"));
+        DatosObras.add(eliminarMaquinaria);
 
         JLabel TipoMaquinariaEditar = new JLabel("Tipo de maquinaria:");
         TipoMaquinariaEditar.setForeground(Color.white);
@@ -659,9 +669,6 @@ public class EditarObra extends JFrame {
             datos[15] = rs.getString(18);//correo del responsable
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al recuperar los datos de la base de datos\n" + e.toString());
-        }
-        for (int i = 0; i < datos.length; i++) {
-            System.out.println(datos[i].toString());
         }
         return datos;
     }

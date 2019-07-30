@@ -311,7 +311,7 @@ public class NuevoAgregarObra extends JFrame {
         //boton para agregar la maquinaria a la lista
         JButton agregarMaquinaria = new JButton("Agregar");
         agregarMaquinaria.setBackground(Color.black);
-        agregarMaquinaria.setBounds(900, 330, 200, 30);
+        agregarMaquinaria.setBounds(900, 320, 200, 30);
         Font fontAgregar = new Font("Arial", Font.BOLD, 20);
         agregarMaquinaria.setFont(fontAgregar);
         agregarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
@@ -323,12 +323,22 @@ public class NuevoAgregarObra extends JFrame {
         //boton para editar  la maquinaria  de la lista
         JButton editarMaquinaria = new JButton("Editar");
         editarMaquinaria.setBackground(Color.black);
-        editarMaquinaria.setBounds(1150, 330, 200, 30);
+        editarMaquinaria.setBounds(1150, 320, 200, 30);
         Font fontEditar = new Font("Arial", Font.BOLD, 20);
-        editarMaquinaria.setFont(fontAgregar);
+        editarMaquinaria.setFont(fontEditar);
         editarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
         editarMaquinaria.setForeground(Color.decode("#049cff"));
         DatosObras.add(editarMaquinaria);
+
+        //boton para eliminar  la maquinaria  de la lista
+        JButton eliminarMaquinaria = new JButton("Eliminar");
+        eliminarMaquinaria.setBackground(Color.black);
+        eliminarMaquinaria.setBounds(1020, 360, 200, 30);
+        Font fontEliminar = new Font("Arial", Font.BOLD, 20);
+        eliminarMaquinaria.setFont(fontEliminar);
+        eliminarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
+        eliminarMaquinaria.setForeground(Color.decode("#049cff"));
+        DatosObras.add(eliminarMaquinaria);
 
         JLabel TipoMaquinaria = new JLabel("Tipo de maquinaria:");
         TipoMaquinaria.setForeground(Color.white);
@@ -482,32 +492,47 @@ public class NuevoAgregarObra extends JFrame {
         editarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                //recupera la los datos de la mquinaria que se decea editar
-                String modi[] = list.getSelectedValue().replaceAll(" ", "").split("/");
-                for (int i = 0; i < allTipos.size(); i++) {
-                    if (allTipos.get(i).equals(modi[0])) {
-                        //se establece el tipo de maquina a editar
-                        TipoMC.setSelectedIndex(i);
+                try {
+                    //recupera la los datos de la mquinaria que se decea editar
+                    String modi[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                    for (int i = 0; i < allTipos.size(); i++) {
+                        if (allTipos.get(i).equals(modi[0])) {
+                            //se establece el tipo de maquina a editar
+                            TipoMC.setSelectedIndex(i);
+                        }
                     }
-                }
-                //se establecen los modelos de las maquina se leccionada
-                String consultaModelosNueva = "SELECT MODELO_MAQ FROM Maquinaria WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' GROUP BY MODELO_MAQ";
-                List<Object> auxiliar = recuperarDatos(consultaModelosNueva, "MODELO_MAQ");
-                MaquinariaC.setModel(new DefaultComboBoxModel(auxiliar.toArray()));
-                for (int i = 0; i < auxiliar.size(); i++) {
-                    if (auxiliar.get(i).equals(modi[1])) {
-                        //se establece el modelo de la maquina a editar
-                        MaquinariaC.setSelectedIndex(i);
+                    //se establecen los modelos de las maquina se leccionada
+                    String consultaModelosNueva = "SELECT MODELO_MAQ FROM Maquinaria WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' GROUP BY MODELO_MAQ";
+                    List<Object> auxiliar = recuperarDatos(consultaModelosNueva, "MODELO_MAQ");
+                    MaquinariaC.setModel(new DefaultComboBoxModel(auxiliar.toArray()));
+                    for (int i = 0; i < auxiliar.size(); i++) {
+                        if (auxiliar.get(i).equals(modi[1])) {
+                            //se establece el modelo de la maquina a editar
+                            MaquinariaC.setSelectedIndex(i);
+                        }
                     }
+                    //se recupera el numero de maquinas disponibles para ese modelo
+                    String consultaCantidadNueva = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM Maquinaria"
+                            + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
+                            + "GROUP BY TIPO_MAQ,MODELO_MAQ";
+                    Object cantidadFinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
+                    int disonibles = Integer.parseInt(cantidadFinalNueva == null ? "0" : (String) cantidadFinalNueva);
+                    //se establece el spinner al numero de maquinas que se tenia
+                    CantidadSpiner.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una maquina a editar de la lista");
                 }
-                //se recupera el numero de maquinas disponibles para ese modelo
-                String consultaCantidadNueva = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM Maquinaria"
-                        + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
-                        + "GROUP BY TIPO_MAQ,MODELO_MAQ";
-                Object cantidadFinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
-                int disonibles = Integer.parseInt(cantidadFinalNueva == null ? "0" : (String) cantidadFinalNueva);
-                //se establece el spinner al numero de maquinas que se tenia
-                CantidadSpiner.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
+            }
+        });
+        
+        eliminarMaquinaria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Seleccione un registro de la lista");
+                }
             }
         });
 
