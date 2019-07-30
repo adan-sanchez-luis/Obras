@@ -1,11 +1,11 @@
 
+import com.toedter.calendar.JCalendar;
 import java.awt.*;
-
 import javax.swing.*;
 
 import java.awt.Image;
 
-import com.toedter.calendar.JCalendar;
+//import com.toedter.calendar.JCalendar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -34,7 +35,7 @@ public class NuevoAgregarObra extends JFrame {
 
     NuevoAgregarObra(Connection conexion) {
         this.conexion = conexion;
-
+        setResizable(false);
         setSize(1385, 768);
         setTitle("Agregar obras");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -468,15 +469,20 @@ public class NuevoAgregarObra extends JFrame {
         agregarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                //el registro selecciomnado cuando se edita se eliminara
-                if (!list.isSelectionEmpty()) {
-                    int actualizar = list.getSelectedIndex();
-                    lista.remove(actualizar);
-                }
-                //se recupera el tipo de maquina y el modelo seleccionado
+                //se recupera el tipo de maquina y el modelo seleccionado 
                 String tipo = (String) TipoMC.getSelectedItem();
                 String modelo = (String) MaquinariaC.getSelectedItem();
                 int cantidad = (int) CantidadSpiner.getValue();
+                //el registro selecciomnado cuando se edita se eliminara
+                if (!list.isSelectionEmpty()) {
+                    for (int i = 0; i < lista.size(); i++) {
+                        list.setSelectedIndex(i);
+                        String[] comparar = list.getSelectedValue().replace(" ", "").split("/");
+                        if (tipo.equals(comparar[0]) && modelo.equals(comparar[1])) {
+                            lista.remove(i);
+                        }
+                    }
+                }
                 lista.addElement(String.format("%-20s/     %-20s/     %d", tipo, modelo, cantidad));
 
                 //el spinner se actualiza a los nuevos valores desponibles
@@ -623,25 +629,33 @@ public class NuevoAgregarObra extends JFrame {
                         JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
                     }
 
+                    //consulta para recuperar el id de la obra recien agregada
                     String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + NombreObratxt.getText()
                             + "' AND NOMBRE_CLIENTE='" + clienteC.getSelectedItem() + "'";
                     int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
+                    //se recorre la lista de maquinas a agregar
                     for (int i = 0; i < lista.size(); i++) {
                         list.setSelectedIndex(i);
+                        //se recuperan los datos de la fila de maquinas a agregar
                         String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                        //numero de maquinas a agregar del mismo tipo y modelo
                         int repeticiones = Integer.parseInt(filaLista[2]);
+                        //veces que se va a repetir la accion para agregar una maquina del mismo tipo y modelo
                         int repeticion = 1;
                         while (repeticion <= repeticiones) {
+                            //consulta para recuperar el id de la maquina
                             String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
                                     + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
-                            int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));                            
+                            int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));
+                            //se agrega a la base de datos la relacion de que maquina esta opocuapada en la obra
                             PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
                             psd2.setString(1, String.valueOf(idMaquina));
-                            psd2.setString(2, String.valueOf(id_Obra));                            
+                            psd2.setString(2, String.valueOf(id_Obra));
                             int res2 = psd2.executeUpdate();
                             if (res2 < 0) {
                                 JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
                             }
+                            //consulta para actualizar el estado de la maquina 
                             String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
                             try {
                                 Statement stmt = (Statement) conexion.createStatement();
@@ -675,7 +689,7 @@ public class NuevoAgregarObra extends JFrame {
         });
 
         //boton para recargar la lsiat de clientes
-        ImageIcon recarga = new ImageIcon("C:\\Users\\Adan Sanchez\\Documents\\NetBeansProjects\\Fun_Ing_Soft\\src\\neo5.png");
+        ImageIcon recarga = new ImageIcon("C:\\Imagenes_obra\\neo5.png");
         Image img = recarga.getImage();
         Image temp_img = img.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         recarga = new ImageIcon(temp_img);

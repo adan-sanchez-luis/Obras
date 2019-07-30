@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -105,10 +107,38 @@ public class PrincipalOriginal extends JFrame {
         sc.setBounds(10, 70, 1336, 410);
         Obras.add(sc);
 
+        JLabel etiqueta_buscador = new JLabel("<html><body>Buscar por: Nombre de la obra <br> Nombre del cliente o Nombre del responsable</body></html>");
+        etiqueta_buscador.setFont(new Font("Arial", Font.BOLD, 14));
+        etiqueta_buscador.setForeground(Color.WHITE);
+        etiqueta_buscador.setBounds(70, 12, 400, 30);
+        Obras.add(etiqueta_buscador);
+
         JTextField busqueda = new JTextField();
         busqueda.setForeground(Color.black);
         busqueda.setBounds(463, 15, 400, 30);
         Obras.add(busqueda);
+        busqueda.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent ke) {
+                String consultaBusqueda = "SELECT * FROM OBRA WHERE NOMBRE_OBRA LIKE '%" + busqueda.getText()
+                        + "%' OR NOMBRE_CLIENTE LIKE '%" + busqueda.getText()
+                        + "%' OR NOMBRE_RESPONSABLE LIKE '%" + busqueda.getText() + "%'";
+                DefaultTableModel modeloAux = new DefaultTableModel(recuperarDatosObra(consultaBusqueda), Cabecera) {
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        return false;
+                    }
+                };
+                OrasT.setModel(modeloAux);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent ke) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent ke) {
+            }
+        });
 
         //boton que actualiza la tabla de registros
         JButton actualizar = new JButton("ACTUALIZAR");
