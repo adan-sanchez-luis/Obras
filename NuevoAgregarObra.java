@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,14 +32,15 @@ public class NuevoAgregarObra extends JFrame {
     Connection conexion;
     JLabel imagen;
 
-    NuevoAgregarObra() {
-        conexion = getConexion();
+    NuevoAgregarObra(Connection conexion) {
+        this.conexion = conexion;
 
         setSize(1385, 768);
         setTitle("Agregar obras");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
 
+        //panel donde se guardaran todos componentes
         JPanel DatosObras = new JPanel();
         DatosObras.setLayout(null);
         DatosObras.setSize(1366, 768);
@@ -60,12 +60,15 @@ public class NuevoAgregarObra extends JFrame {
         nombresResponsable.setBounds(0, 40, 300, 20);
         DatosObras.add(nombresResponsable);
 
+        //campo donde se escibre el nombre del resposable
         CampoDato NombreResponsabletxt = new CampoDato();
         NombreResponsabletxt.setForeground(Color.black);
         NombreResponsabletxt.setBounds(105, 40, 200, 30);
         NombreResponsabletxt.setBorder(null);
+        //se restringe solo a texto
         NombreResponsabletxt.setTipo('T');
-        NombreResponsabletxt.setLongitud(20);
+        //se limita la cantidad de letras que puede escribir
+        NombreResponsabletxt.setLongitud(30);
         DatosObras.add(NombreResponsabletxt);
 
         JLabel ApellidoResponsablePaterno = new JLabel("Apellido paterno:");
@@ -75,12 +78,15 @@ public class NuevoAgregarObra extends JFrame {
         ApellidoResponsablePaterno.setBounds(315, 40, 300, 20);
         DatosObras.add(ApellidoResponsablePaterno);
 
+        //campo donde se agrega el apellido paterno del responsable
         CampoDato ApellidoResponsablePaternotxt = new CampoDato();
         ApellidoResponsablePaternotxt.setForeground(Color.black);
         ApellidoResponsablePaternotxt.setBounds(480, 40, 200, 30);
         ApellidoResponsablePaternotxt.setBorder(null);
+        //se restringe solo a texto
         ApellidoResponsablePaternotxt.setTipo('T');
-        ApellidoResponsablePaternotxt.setLongitud(20);
+        //se limita la cantidad de letras que puede escribir
+        ApellidoResponsablePaternotxt.setLongitud(30);
         DatosObras.add(ApellidoResponsablePaternotxt);
 
         JLabel ApellidoResponsableMaterno = new JLabel("Apellido materno:");
@@ -90,12 +96,15 @@ public class NuevoAgregarObra extends JFrame {
         ApellidoResponsableMaterno.setBounds(690, 40, 300, 20);
         DatosObras.add(ApellidoResponsableMaterno);
 
+        //campo donde se escribe el apellido materno del responsable
         CampoDato ApellidoResponsableMaternotxt = new CampoDato();
         ApellidoResponsableMaternotxt.setForeground(Color.black);
         ApellidoResponsableMaternotxt.setBounds(860, 40, 200, 30);
         ApellidoResponsableMaternotxt.setBorder(null);
+        //se restringe solo a texto
         ApellidoResponsableMaternotxt.setTipo('T');
-        ApellidoResponsableMaternotxt.setLongitud(20);
+        //se limita la cantidad de letras que puede escribir
+        ApellidoResponsableMaternotxt.setLongitud(30);
         DatosObras.add(ApellidoResponsableMaternotxt);
 
         JLabel Monto = new JLabel("Monto de la obra: $");
@@ -105,11 +114,14 @@ public class NuevoAgregarObra extends JFrame {
         Monto.setBounds(1065, 40, 300, 20);
         DatosObras.add(Monto);
 
+        //campo donde se escribe la cantidad que costara la obra
         CampoDato Montotxt = new CampoDato();
         Montotxt.setForeground(Color.black);
         Montotxt.setBounds(1250, 40, 70, 30);
         Montotxt.setBorder(null);
+        //se restringe solo a numeros con la posibilidad de que sean decimales
         Montotxt.setTipo('D');
+        //se limita la cantidad de letras que puede escribir
         Montotxt.setLongitud(20);
         DatosObras.add(Montotxt);
 
@@ -120,11 +132,14 @@ public class NuevoAgregarObra extends JFrame {
         Telefono.setBounds(0, 80, 300, 20);
         DatosObras.add(Telefono);
 
+        //capo donde se escribe el telefono del responsable
         CampoDato Telefonotxt = new CampoDato();
         Telefonotxt.setForeground(Color.black);
         Telefonotxt.setBounds(107, 80, 200, 30);
         Telefonotxt.setBorder(null);
+        //se restringe solo a numeros sin poder ser decimales
         Telefonotxt.setTipo('E');
+        //se limita la cantidad de letras que puede escribir
         Telefonotxt.setLongitud(15);
         DatosObras.add(Telefonotxt);
 
@@ -135,6 +150,7 @@ public class NuevoAgregarObra extends JFrame {
         Correo.setBounds(410, 80, 300, 20);
         DatosObras.add(Correo);
 
+        //campo donde se escribe el correo del responsable
         JTextField Correotxt = new JTextField();
         Correotxt.setForeground(Color.black);
         Correotxt.setBounds(480, 80, 200, 30);
@@ -170,6 +186,7 @@ public class NuevoAgregarObra extends JFrame {
         Calle.setBounds(0, 150, 300, 20);
         DatosObras.add(Calle);
 
+        //campo donde se agrega la called de la obra
         JTextField Calletxt = new JTextField();
         Calletxt.setForeground(Color.black);
         Calletxt.setBounds(105, 150, 200, 30);
@@ -183,12 +200,15 @@ public class NuevoAgregarObra extends JFrame {
         Numero.setBounds(397, 150, 300, 20);
         DatosObras.add(Numero);
 
+        //campo donde se agrega el numero de la calle de la obra
         CampoDato Numtxt = new CampoDato();
         Numtxt.setForeground(Color.black);
         Numtxt.setBounds(480, 150, 50, 30);
         Numtxt.setBorder(null);
+        //se restringe solo a numeros sin la posibilidad de que sean decimales
         Numtxt.setTipo('E');
-        Numtxt.setLongitud(10);
+        //se limita la cantidad de letras que puede escribir
+        Numtxt.setLongitud(11);
         DatosObras.add(Numtxt);
 
         JLabel colonia = new JLabel("Colonia:");
@@ -198,11 +218,14 @@ public class NuevoAgregarObra extends JFrame {
         colonia.setBounds(780, 150, 300, 20);
         DatosObras.add(colonia);
 
+        //capo donde se agrega la colonia donde ests obicada la obra
         CampoDato Coltxt = new CampoDato();
         Coltxt.setForeground(Color.black);
         Coltxt.setBounds(858, 150, 200, 30);
         Coltxt.setBorder(null);
+        //se restringe solo a texto el campo
         Coltxt.setTipo('T');
+        //se limita la cantidad de letras que puede escribir        
         Coltxt.setLongitud(30);
         DatosObras.add(Coltxt);
 
@@ -213,11 +236,14 @@ public class NuevoAgregarObra extends JFrame {
         Municipio.setBounds(1080, 150, 300, 20);
         DatosObras.add(Municipio);
 
+        //campo donde se escribe el municipio donde se ubica la obra
         CampoDato Municipiotxt = new CampoDato();
         Municipiotxt.setForeground(Color.black);
         Municipiotxt.setBounds(1180, 150, 170, 30);
         Municipiotxt.setBorder(null);
+        //se restringe solo a texto el campo
         Municipiotxt.setTipo('T');
+        //se limita la cantidad de letras que puede escribir
         Municipiotxt.setLongitud(30);
         DatosObras.add(Municipiotxt);
 
@@ -232,7 +258,9 @@ public class NuevoAgregarObra extends JFrame {
         Estadotxt.setForeground(Color.black);
         Estadotxt.setBounds(105, 190, 200, 30);
         Estadotxt.setBorder(null);
+        //se restringe el solo a texto el campo
         Estadotxt.setTipo('T');
+        //se limita la cantidad de letras que puede escribir
         Estadotxt.setLongitud(30);
         DatosObras.add(Estadotxt);
 
@@ -243,11 +271,14 @@ public class NuevoAgregarObra extends JFrame {
         cp.setBounds(443, 190, 300, 20);
         DatosObras.add(cp);
 
+        //campo donde se escribe el CP donde se ubuca la obra
         CampoDato cptxt = new CampoDato();
         cptxt.setForeground(Color.black);
         cptxt.setBounds(480, 190, 50, 30);
         cptxt.setBorder(null);
+        //se resting a numeros sin la posibidad de ser decimales
         cptxt.setTipo('E');
+        //se limita la cantidad de letras que puede escribir
         cptxt.setLongitud(30);
         DatosObras.add(cptxt);
 
@@ -259,11 +290,14 @@ public class NuevoAgregarObra extends JFrame {
         NombreObra.setBounds(675, 190, 300, 20);
         DatosObras.add(NombreObra);
 
+        //campo donde se escribe el nombre de la obra
         CampoDato NombreObratxt = new CampoDato();
         NombreObratxt.setForeground(Color.black);
         NombreObratxt.setBounds(858, 190, 200, 30);
         NombreObratxt.setBorder(null);
+        //se restringe solo a texto el campo
         NombreObratxt.setTipo('T');
+        //se limita la cantidad de letras que puede escribir
         NombreObratxt.setLongitud(50);
         DatosObras.add(NombreObratxt);
 
@@ -274,7 +308,7 @@ public class NuevoAgregarObra extends JFrame {
         anuncioMaquinaria.setBounds(400, 100, 700, 300);
         DatosObras.add(anuncioMaquinaria);
 
-        //boton para agregar la maquinaria 
+        //boton para agregar la maquinaria a la lista
         JButton agregarMaquinaria = new JButton("Agregar");
         agregarMaquinaria.setBackground(Color.black);
         agregarMaquinaria.setBounds(900, 330, 200, 30);
@@ -282,10 +316,11 @@ public class NuevoAgregarObra extends JFrame {
         agregarMaquinaria.setFont(fontAgregar);
         agregarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
         agregarMaquinaria.setForeground(Color.decode("#049cff"));
+        //se desactiva el boton agregar maquina debido a que si la disponibilidad es 0 no se puede agregar una maquina
         agregarMaquinaria.setEnabled(false);
         DatosObras.add(agregarMaquinaria);
 
-        //boton para editar  la maquinaria 
+        //boton para editar  la maquinaria  de la lista
         JButton editarMaquinaria = new JButton("Editar");
         editarMaquinaria.setBackground(Color.black);
         editarMaquinaria.setBounds(1150, 330, 200, 30);
@@ -338,6 +373,7 @@ public class NuevoAgregarObra extends JFrame {
                 + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
                 + "GROUP BY TIPO_MAQ,MODELO_MAQ";
         Object cantidadFinal = recuperarDato(consultaCantidad, "Disponibles");
+        //si la maquina seleccionada y el modelo seleccionado no tienen maquinas disponibles se le accina a la disponibilidad 0
         int disponibles = Integer.parseInt(cantidadFinal == null ? "0" : (String) cantidadFinal);
         JSpinner CantidadSpiner = new JSpinner(new SpinnerNumberModel(0, 0, disponibles, 1));
         CantidadSpiner.setForeground(Color.black);
@@ -350,25 +386,27 @@ public class NuevoAgregarObra extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent ie) {
                 String consultaModelosNueva = "SELECT MODELO_MAQ FROM Maquinaria WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' GROUP BY MODELO_MAQ";
+                //se optienen la lista de modelos de la maquina se leccionada
                 List<Object> auxiliar = recuperarDatos(consultaModelosNueva, "MODELO_MAQ");
+                //se le asigna los modelos correspondientes de la nueva maquina seleccionada
                 MaquinariaC.setModel(new DefaultComboBoxModel(auxiliar.toArray()));
                 String consultaCantidadNueva = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM Maquinaria"
                         + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
                         + "GROUP BY TIPO_MAQ,MODELO_MAQ";
                 Object cantidadfinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
+                //si la maquina seleccionada y el modelo seleccionado no tienen maquinas disponibles se le accina a la disponibilidad 0
                 int disponibles = Integer.parseInt(cantidadfinalNueva == null ? "0" : (String) cantidadfinalNueva);
                 CantidadSpiner.setModel(new SpinnerNumberModel(0, 0, disponibles, 1));
+                //se desactiva el boton agregar maquina debido a que si la disponibilidad es 0 no se puede agregar una maquina
                 agregarMaquinaria.setEnabled(false);
-                String consultaImagenNueva = "SELECT TIPO_MAQ,IMAGEN_MAQ FROM Maquinaria"
-                        + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem()
-                        + "'GROUP BY TIPO_MAQ,IMAGEN_MAQ";
+                String consultaImagenNueva = "SELECT * FROM Maquinaria" + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem()
+                        + "'GROUP BY TIPO_MAQ";
                 //Para que la imagen se redimensione
                 ImageIcon foto = getImagen(consultaImagenNueva, "IMAGEN_MAQ");
-                System.out.println(foto);
-                //panel imagen es la etiqueta donde se pondra
-                if (foto != null) {                    
+                if (foto != null) {
                     Image foton = foto.getImage().getScaledInstance(imagen.getWidth(), imagen.getHeight(), Image.SCALE_DEFAULT);
                     foto = new ImageIcon(foton);
+                    //se establece la imagen del tipo de maquina seleccionada
                     imagen.setIcon(foto);
                 } else {
                     imagen.removeAll();
@@ -385,32 +423,32 @@ public class NuevoAgregarObra extends JFrame {
                         + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
                         + "GROUP BY TIPO_MAQ,MODELO_MAQ";
                 Object cantidadFinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
+                //si la maquina seleccionada y el modelo seleccionado no tienen maquinas disponibles se le accina a la disponibilidad 0
                 int disonibles = Integer.parseInt(cantidadFinalNueva == null ? "0" : (String) cantidadFinalNueva);
                 CantidadSpiner.setModel(new SpinnerNumberModel(0, 0, disonibles, 1));
+                //se desactiva el boton agregar maquina debido a que si la disponibilidad es 0 no se puede agregar una maquina
                 agregarMaquinaria.setEnabled(false);
             }
         });
 
-        String consultaImagen = "SELECT TIPO_MAQ,MODELO_MAQ,IMAGEN_MAQ FROM Maquinaria"
-                + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
-                + "GROUP BY TIPO_MAQ,MODELO_MAQ,IMAGEN_MAQ";
+        String consultaImagen = "SELECT * FROM Maquinaria" + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem()
+                + "'GROUP BY TIPO_MAQ";
+        //se establece la imagen al tipo de maquna seleecionada
         imagen = new JLabel(getImagen(consultaImagen, "IMAGEN_MAQ"));
-        //imagen.setBackground(Color.decode("#049cff"));
-        //imagen.setBounds(950, 400, 400, 200);
         imagen.setBounds(850, 400, 200, 200);
         DatosObras.add(imagen);
 
         //Para que la imagen se redimensione
         ImageIcon foto = getImagen(consultaImagen, "IMAGEN_MAQ");
-        //panel imagen es la etiqueta donde se pondra
-        Image foton = foto.getImage().getScaledInstance(imagen.getWidth(), imagen.getHeight(), Image.SCALE_DEFAULT);
-        foto = new ImageIcon(foton);
         if (foto != null) {
+            Image foton = foto.getImage().getScaledInstance(imagen.getWidth(), imagen.getHeight(), Image.SCALE_DEFAULT);
+            foto = new ImageIcon(foton);
             imagen.setIcon(foto);
         } else {
             imagen.setText("No Existe una Imagen el la base de Datos");
         }
 
+        //lista de las maquinas que se ocuparan en la construccion
         DefaultListModel<String> lista = new DefaultListModel();
         JList<String> list = new JList<>(lista);
         list.setBounds(1100, 400, 250, 200);
@@ -420,15 +458,18 @@ public class NuevoAgregarObra extends JFrame {
         agregarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                //el registro selecciomnado cuando se edita se eliminara
                 if (!list.isSelectionEmpty()) {
                     int actualizar = list.getSelectedIndex();
                     lista.remove(actualizar);
                 }
+                //se recupera el tipo de maquina y el modelo seleccionado
                 String tipo = (String) TipoMC.getSelectedItem();
                 String modelo = (String) MaquinariaC.getSelectedItem();
                 int cantidad = (int) CantidadSpiner.getValue();
-                lista.addElement(String.format("%s     /     %s     /     %d", tipo, modelo, cantidad));
+                lista.addElement(String.format("%-20s/     %-20s/     %d", tipo, modelo, cantidad));
 
+                //el spinner se actualiza a los nuevos valores desponibles
                 SpinnerNumberModel aux = (SpinnerNumberModel) CantidadSpiner.getModel();
                 int menos = (int) aux.getMaximum() - (int) CantidadSpiner.getValue();
                 CantidadSpiner.setModel(new SpinnerNumberModel(0, 0, menos, 1));
@@ -441,28 +482,31 @@ public class NuevoAgregarObra extends JFrame {
         editarMaquinaria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                //recupera la los datos de la mquinaria que se decea editar
                 String modi[] = list.getSelectedValue().replaceAll(" ", "").split("/");
-                for (int i = 0; i < modi.length; i++) {
-                    System.out.println(modi[i]);
-                }
                 for (int i = 0; i < allTipos.size(); i++) {
                     if (allTipos.get(i).equals(modi[0])) {
+                        //se establece el tipo de maquina a editar
                         TipoMC.setSelectedIndex(i);
                     }
                 }
+                //se establecen los modelos de las maquina se leccionada
                 String consultaModelosNueva = "SELECT MODELO_MAQ FROM Maquinaria WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' GROUP BY MODELO_MAQ";
                 List<Object> auxiliar = recuperarDatos(consultaModelosNueva, "MODELO_MAQ");
                 MaquinariaC.setModel(new DefaultComboBoxModel(auxiliar.toArray()));
                 for (int i = 0; i < auxiliar.size(); i++) {
                     if (auxiliar.get(i).equals(modi[1])) {
+                        //se establece el modelo de la maquina a editar
                         MaquinariaC.setSelectedIndex(i);
                     }
                 }
+                //se recupera el numero de maquinas disponibles para ese modelo
                 String consultaCantidadNueva = "SELECT TIPO_MAQ,MODELO_MAQ,COUNT(MODELO_MAQ)as Disponibles FROM Maquinaria"
                         + " WHERE TIPO_MAQ = '" + TipoMC.getSelectedItem() + "' AND MODELO_MAQ = " + MaquinariaC.getSelectedItem() + " AND ESTADO_MAQ = 'DISPONIBLE' "
                         + "GROUP BY TIPO_MAQ,MODELO_MAQ";
                 Object cantidadFinalNueva = recuperarDato(consultaCantidadNueva, "Disponibles");
                 int disonibles = Integer.parseInt(cantidadFinalNueva == null ? "0" : (String) cantidadFinalNueva);
+                //se establece el spinner al numero de maquinas que se tenia
                 CantidadSpiner.setModel(new SpinnerNumberModel(Integer.parseInt(modi[2]), 0, disonibles, 1));
             }
         });
@@ -470,6 +514,7 @@ public class NuevoAgregarObra extends JFrame {
         CantidadSpiner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent ce) {
+                //el boton agregar se desactiva si el spinner esta en 0 para no poder agregar maquinas que no estan disponibles
                 if ((int) CantidadSpiner.getValue() == 0) {
                     agregarMaquinaria.setEnabled(false);
                 } else {
@@ -485,6 +530,7 @@ public class NuevoAgregarObra extends JFrame {
         FechaInicio.setBounds(0, 230, 300, 300);
         DatosObras.add(FechaInicio);
 
+        //calendario donde se escoje la fecha de inicio de la obra
         JCalendar FechaI = new JCalendar();
         FechaI.setForeground(Color.black);
         FechaI.setBorder(null);
@@ -495,17 +541,17 @@ public class NuevoAgregarObra extends JFrame {
         FechaFinal.setForeground(Color.white);
         Font fuenteFechaF = new Font("Arial", Font.BOLD, 20);
         FechaFinal.setFont(fuenteFechaF);
-        //FechaFinal.setBounds(478, 230, 300, 300);
         FechaFinal.setBounds(400, 230, 300, 300);
         DatosObras.add(FechaFinal);
 
+        //calendario donde se escojen la fecha final de la obra
         JCalendar FechaF = new JCalendar();
         FechaF.setForeground(Color.black);
         FechaF.setBorder(null);
-        //  FechaF.setBounds(480, 400, 390, 200);
         FechaF.setBounds(402, 400, 390, 200);
         DatosObras.add(FechaF);
 
+        //boton que recupera los datos de todos los campos y los guarda en la base de datos
         JButton AgregarInformaciónEditar = new JButton("Guardar información");
         AgregarInformaciónEditar.setBackground(Color.black);
         AgregarInformaciónEditar.setBounds(380, 640, 300, 50);
@@ -525,6 +571,7 @@ public class NuevoAgregarObra extends JFrame {
                             + "CALLE_OBRA,NUMERO_CALLE,COLONIA,MUNICIPIO,CP,ESTADO,FECHA_INICIO,"
                             + "FECHA_FIN,INVERSION,TELEFONO_RESP,CORREO_RESP,IDCLIENTE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+                    //se recuperan los datos para introducirlo a la base de datos
                     psd.setString(1, NombreObratxt.getText());//nombre obra
                     psd.setString(2, (String) clienteC.getSelectedItem());//nombre empresa
                     psd.setString(3, NombreResponsabletxt.getText());//nombre responsable
@@ -537,15 +584,13 @@ public class NuevoAgregarObra extends JFrame {
                     psd.setString(10, cptxt.getText());//cp donde se ubica la obra
                     psd.setString(11, Estadotxt.getText());//estado donde se ubica la obra
                     psd.setDate(12, Date.valueOf(ff.format(FechaI.getDate())));//fecha inicio de la obra
-                    //psd.setInt(7, 12);
                     psd.setDate(13, Date.valueOf(ff.format(FechaF.getDate())));//fecha final de la obra
                     psd.setDouble(14, Double.parseDouble(Montotxt.getText()));//monto o invercion de la obra                    
                     psd.setString(15, Telefonotxt.getText());//telefono del responsable 
                     psd.setString(16, Correotxt.getText());//correo del responsable       
                     String consulta = "SELECT * FROM CLIENTE WHERE NOMBRE_CLIENTE = '" + clienteC.getSelectedItem() + "'";
                     int id = Integer.parseInt(recuperarDato(consulta, "IDCLIENTE"));
-                    psd.setInt(17, id);//id del cliente                                       
-                    //psd.setString(a, consulta);                                 
+                    psd.setInt(17, id);//id del cliente
 
                     //PreparedStatement segundaConexiuon=cn.prepareStatement("INSERT INTO MAQUINARIA (ESTADO_MAQ) VALUES ('EN USO')");
                     //String modicar[] = list.getSelectedValue().replaceAll(" ", "").split("/");
@@ -559,6 +604,7 @@ public class NuevoAgregarObra extends JFrame {
             }
         });
 
+        //boton de acceso rapido por si un cliente no se habia registrado y los datos de la obra ya se habian rellenado
         JButton AgregarCliente = new JButton("Agregar Cliente ");
         AgregarCliente.setBackground(Color.black);
         AgregarCliente.setBounds(720, 640, 300, 50);
@@ -574,6 +620,7 @@ public class NuevoAgregarObra extends JFrame {
             }
         });
 
+        //boton para recargar la lsiat de clientes
         ImageIcon recarga = new ImageIcon("C:\\Users\\Adan Sanchez\\Documents\\NetBeansProjects\\Fun_Ing_Soft\\src\\neo5.png");
         Image img = recarga.getImage();
         Image temp_img = img.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
@@ -594,21 +641,6 @@ public class NuevoAgregarObra extends JFrame {
         background.add(DatosObras);
         add(background);
         setVisible(true);
-    }
-
-    //Aqui hacemos la conexión a la BDD
-    public static Connection getConexion() {
-        Connection con = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = (Connection) DriverManager.getConnection("jdbc:mysql://ns64.hostgator.mx:3306/dirtycod_constructora?autoReconnect=true&useSSL=false", "dirtycod_dirty", "dirtycode");
-            System.out.println("Se concecto Correctamente ");
-
-        } catch (Exception e) {
-            System.err.println("Hubo un error en la instalacion " + e);
-        }
-        return con;
-
     }
 
     //recupera un dato en espesifico de la base de datos
@@ -646,9 +678,7 @@ public class NuevoAgregarObra extends JFrame {
         return datos;
     }
 
-    /**
-     * **********METODO QUE DEVUELVE UN IMAGE ICON*
-     */
+    //METODO QUE DEVUELVE UN IMAGE ICON
     public ImageIcon getImagen(String consulta, String columna) {
         ImageIcon ic = null;
         InputStream is = null;
@@ -667,10 +697,4 @@ public class NuevoAgregarObra extends JFrame {
         }
         return ic;
     }
-
-    public static void main(String[] args) {
-
-        new NuevoAgregarObra();
-    }
-
 }

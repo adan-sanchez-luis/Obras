@@ -20,22 +20,22 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 
 public class PrincipalOriginal extends JFrame {
-
+    
     Connection conexion;
-
+    
     PrincipalOriginal() {
         conexion = getConexion();
         setSize(1366, 768);
         setTitle("Sistema de gestion de maquinaria");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-
+        
         JPanel principal = new JPanel();
         principal.setLayout(null);
-
+        
         principal.setBackground(Color.black);
         principal.setBounds(0, 115, 1366, 768);
-
+        
         ImageIcon background_image = new ImageIcon("C:\\Users\\Adan Sanchez\\Documents\\NetBeansProjects\\Fun_Ing_Soft\\src\\neo3.jpg");
         Image img = background_image.getImage();
         Image temp_img = img.getScaledInstance(1366, 768, Image.SCALE_SMOOTH);
@@ -56,13 +56,13 @@ public class PrincipalOriginal extends JFrame {
         tabla.addTab("Obras", Obras());
         tabla.addTab("Clientes", Clientes());
         tabla.addTab("Finanzas", Finanzas());
-
+        
     }
-
+    
     public static void main(String[] args) {
         new PrincipalOriginal();
     }
-
+    
     public JPanel bienvenido() {
         JPanel bienvenido = new JPanel();
         bienvenido.setLayout(null);
@@ -70,25 +70,23 @@ public class PrincipalOriginal extends JFrame {
         bienvenido.setBackground(Color.black);
         return bienvenido;
     }
-
+    
     public JPanel Maquinaria() {
         JPanel Maquinas = new JPanel();
         Maquinas.setLayout(null);
         Maquinas.setBackground(Color.black);
         return Maquinas;
-
+        
     }
-
+    
     public JPanel Obras() {
         JPanel Obras = new JPanel();
         Obras.setLayout(null);
         Obras.setBackground(Color.black);
-
-        String[] Cabecera = {"NOMBRE DE LA OBRA", "NOMBRE DEL RESPONSABLE", "FECHA DE INICIO", "FECHA DE FINALIZACIÓN", "NÚMERO DEL RESPONSABLE", "INVERSIÓN $", "NOMBRE DEL CLIENTE", "NUM DE MÁQUINAS RENTADAS"};
+        
+        String[] Cabecera = {"NOMBRE DE LA OBRA", "NOMBRE DEL RESPONSABLE", "FECHA DE INICIO", "FECHA DE FINALIZACIÓN", "NÚMERO DEL RESPONSABLE", "INVERSIÓN $", "NOMBRE DEL CLIENTE"};
         String consulta = "SELECT * FROM OBRA";
-        //String[][] datos = {{"Carretera Esmeralda", "Juan de Dios", "01/02/16", "01/03/16", "9566162", "100,000", "Construcciones El chapo", "3"}};
         DefaultTableModel modelo = new DefaultTableModel(recuperarDatosObra(consulta), Cabecera) {
-            //DefaultTableModel modelo = new DefaultTableModel(datos,Cabecera) {
             //La edicion de la tabla esta desactivada
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return false;
@@ -105,22 +103,23 @@ public class PrincipalOriginal extends JFrame {
         sc.setVisible(true);
         sc.setBounds(10, 70, 1336, 410);
         Obras.add(sc);
-
+        
         JTextField busqueda = new JTextField();
         busqueda.setForeground(Color.black);
         busqueda.setBounds(463, 15, 400, 30);
         Obras.add(busqueda);
 
+        //boton que actualiza la tabla de registros
         JButton actualizar = new JButton("ACTUALIZAR");
         actualizar.setBackground(Color.black);
-        //entrar.setBounds(110, 350, 150, 50);
         actualizar.setBorder(new ComponenteBotonRedondo(40));
         actualizar.setForeground(Color.decode("#049cff"));
-        actualizar.setBounds(866, 15, 150, 30);
+        actualizar.setBounds(866, 15, 200, 30);
         Obras.add(actualizar);
         actualizar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                //La edicion de la tabla esta desactivada
                 DefaultTableModel modeloAux = new DefaultTableModel(recuperarDatosObra(consulta), Cabecera) {
                     public boolean isCellEditable(int rowIndex, int columnIndex) {
                         return false;
@@ -130,6 +129,7 @@ public class PrincipalOriginal extends JFrame {
             }
         });
 
+        //boton para agregar una nueva obra
         JButton Agregar = new JButton("Agregar");
         Agregar.setBackground(Color.black);
         Agregar.setBorder(new ComponenteBotonRedondo(40));
@@ -140,10 +140,11 @@ public class PrincipalOriginal extends JFrame {
         Agregar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                new NuevoAgregarObra();
+                new NuevoAgregarObra(conexion);
             }
         });
 
+        //boton para borrar el registro seleccionado
         JButton Editar = new JButton("Editar");
         Editar.setBackground(Color.black);
         Editar.setBorder(new ComponenteBotonRedondo(40));
@@ -154,15 +155,23 @@ public class PrincipalOriginal extends JFrame {
         Editar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                int fila = OrasT.getSelectedRow();
-                String nombreObra = (String) OrasT.getValueAt(fila, 0);
-                String nombreCliente=(String)OrasT.getValueAt(fila, 6);
-                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='"+nombreCliente+"'";
-                int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
-                new EditarObra(id_Obra);
+                try {
+                    //recupera la fila seleccionada
+                    int fila = OrasT.getSelectedRow();
+                    //recupera el nombre de la obra
+                    String nombreObra = (String) OrasT.getValueAt(fila, 0);
+                    //recupera el nomre del cliente
+                    String nombreCliente = (String) OrasT.getValueAt(fila, 6);
+                    String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='" + nombreCliente + "'";
+                    int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
+                    //abre la ventana para agregar una nueva obra
+                    new EditarObra(conexion, id_Obra);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Seleccione un registro");
+                }
             }
         });
-
+        
         JButton Eliminar = new JButton("Eliminar");
         Eliminar.setBackground(Color.black);
         Eliminar.setBorder(new ComponenteBotonRedondo(40));
@@ -173,30 +182,37 @@ public class PrincipalOriginal extends JFrame {
         Eliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                int fila = OrasT.getSelectedRow();
-                String nombreObra = (String) OrasT.getValueAt(fila, 0);
-                String nombreCliente=(String)OrasT.getValueAt(fila, 6);
-                String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='"+nombreCliente+"'";
-                int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
-                    String eliminar = "DELETE FROM OBRA WHERE CLAVE_OBRA = " + id_Obra;
                 try {
-                    Statement stmt = (Statement) conexion.createStatement();
-                    stmt.executeUpdate(eliminar);
-                } catch (Exception ex) {
-                    System.err.println("Error al insertar " + ex);
+                    //recupera la fila seleccionada
+                    int fila = OrasT.getSelectedRow();
+                    //recupera el nombre de la obra
+                    String nombreObra = (String) OrasT.getValueAt(fila, 0);
+                    //recupera el nombre del cliente
+                    String nombreCliente = (String) OrasT.getValueAt(fila, 6);
+                    String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='" + nombreCliente + "'";
+                    int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
+                    String eliminar = "DELETE FROM OBRA WHERE CLAVE_OBRA = " + id_Obra;
+                    try {
+                        Statement stmt = (Statement) conexion.createStatement();
+                        stmt.executeUpdate(eliminar);
+                    } catch (Exception ex) {
+                        System.err.println("Error al eliminar " + ex);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Seleccione un registro");
                 }
             }
         });
         return Obras;
     }
-
+    
     public JPanel Clientes() {
         JPanel Clientes = new JPanel();
         Clientes.setLayout(null);
         Clientes.setBackground(Color.black);
         return Clientes;
     }
-
+    
     public JPanel Finanzas() {
         JPanel Finanzas = new JPanel();
         Finanzas.setBackground(Color.black);
@@ -213,14 +229,15 @@ public class PrincipalOriginal extends JFrame {
             Class.forName("com.mysql.jdbc.Driver");
             con = (Connection) DriverManager.getConnection("jdbc:mysql://ns64.hostgator.mx:3306/dirtycod_constructora?autoReconnect=true&useSSL=false", "dirtycod_dirty", "dirtycode");
             System.out.println("Se concecto Correctamente ");
-
+            
         } catch (Exception e) {
             System.err.println("Hubo un error en la instalacion " + e);
         }
         return con;
-
+        
     }
-
+    
+    //recupera un dato en espesifico de la base de datos
     public String recuperarDato(String consulta, String columna) {
         String dato = null;
         try {
@@ -234,25 +251,26 @@ public class PrincipalOriginal extends JFrame {
         }
         return dato;
     }
-
+    
+    //recupera todos los registros de las obras de la base de datos
     public Object[][] recuperarDatosObra(String consulta) {
         Object[][] datos = new Object[getTotalFilas(consulta)][8];
         try {
             Statement stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery(consulta); 
+            ResultSet rs = stmt.executeQuery(consulta);            
             int i = 0;
-            try{
-            while (rs.next()) {
-                datos[i][0] = rs.getString(2);//nombre de la obra
-                datos[i][1] = rs.getString(4) + " " + rs.getString(5) + " " + rs.getString(6);//nombre del responsable
-                datos[i][2] = String.valueOf(rs.getDate(13));//fecha inicio
-                datos[i][3] = String.valueOf(rs.getDate(15));//fecha final
-                datos[i][4] = rs.getString(17);//numero del responsable
-                datos[i][5] = String.valueOf(rs.getDouble(16));//inversion
-                datos[i][6] = rs.getString(3);//nombre de la empresa
-                //datos[i][7]=String.valueOf(rs.getInt(11));//numero de maquinarias rentadas
-                i++;
-            }}catch(Exception ex){
+            try {
+                while (rs.next()) {
+                    datos[i][0] = rs.getString(2);//nombre de la obra
+                    datos[i][1] = rs.getString(4) + " " + rs.getString(5) + " " + rs.getString(6);//nombre del responsable
+                    datos[i][2] = String.valueOf(rs.getDate(13));//fecha inicio
+                    datos[i][3] = String.valueOf(rs.getDate(15));//fecha final
+                    datos[i][4] = rs.getString(17);//numero del responsable
+                    datos[i][5] = String.valueOf(rs.getDouble(16));//inversion
+                    datos[i][6] = rs.getString(3);//nombre del cliente
+                    i++;
+                }
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "No hay registros");
             }
         } catch (Exception e) {
@@ -260,7 +278,7 @@ public class PrincipalOriginal extends JFrame {
         }
         return datos;
     }
-
+    
     public int getTotalFilas(String consulta) {
         int count = 0;
         try {
