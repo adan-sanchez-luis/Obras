@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -192,6 +193,31 @@ public class PrincipalOriginal extends JFrame {
                     String consultaObra = "SELECT * FROM OBRA WHERE NOMBRE_OBRA = '" + nombreObra + "' AND NOMBRE_CLIENTE='" + nombreCliente + "'";
                     int id_Obra = Integer.parseInt(recuperarDato(consultaObra, "CLAVE_OBRA"));
                     String eliminar = "DELETE FROM OBRA WHERE CLAVE_OBRA = " + id_Obra;
+
+                    String consultaIdMaq_obra_insumo = "SELECT * FROM OBRA_MAQ_INSUMO NATURAL JOIN Maquinaria WHERE CLAVE_OBRA = " + id_Obra;
+                    java.util.List<Object> allMaquinas = recuperarDatos(consultaIdMaq_obra_insumo, "CLAVE_MAQ");
+                    int[] idMaquinasUsadas = new int[allMaquinas.size()];
+                    for (int i = 0; i < allMaquinas.size(); i++) {
+                        idMaquinasUsadas[i] = Integer.parseInt((String) allMaquinas.get(i));
+                        String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'DISPONIBLE' where CLAVE_MAQ=" + idMaquinasUsadas[i];
+                        try {
+                            Statement stmt = (Statement) conexion.createStatement();
+                            stmt.executeUpdate(actualizarEstado);
+                        } catch (SQLException ex) {
+                            System.err.println("Error al insertar " + ex);
+                        }
+                    }
+
+                    for (int i = 0; i < idMaquinasUsadas.length; i++) {
+                        String eliminarMaq_obras_insumos = "DELETE FROM OBRA_MAQ_INSUMO WHERE CLAVE_OBRA = " + id_Obra + " AND CLAVE_MAQ=" + idMaquinasUsadas[i];
+                        try {
+                            Statement stmt = (Statement) conexion.createStatement();
+                            stmt.executeUpdate(eliminarMaq_obras_insumos);
+                        } catch (Exception ex) {
+                            System.err.println("Error al eliminar " + ex);
+                        }
+                    }
+                    
                     try {
                         Statement stmt = (Statement) conexion.createStatement();
                         stmt.executeUpdate(eliminar);
@@ -291,5 +317,23 @@ public class PrincipalOriginal extends JFrame {
             System.err.println("Error al listar " + e);
         }
         return count;
+    }
+
+    //recupera una lista de datos de la bsae de datos de solo una columna
+    public java.util.List<Object> recuperarDatos(String consulta, String columna) {
+        java.util.List<Object> datos = new ArrayList<Object>();
+        try {
+            Statement stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(consulta);
+            int i = 0;
+            while (rs.next()) {
+                String dat = rs.getString(columna);
+                i++;
+                datos.add(dat);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al recuperar los datos de la base de datos\n" + e.toString());
+        }
+        return datos;
     }
 }

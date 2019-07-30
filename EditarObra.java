@@ -328,7 +328,7 @@ public class EditarObra extends JFrame {
         //boton para editar  la maquinaria 
         JButton editarMaquinaria = new JButton("Editar");
         editarMaquinaria.setBackground(Color.black);
-        editarMaquinaria.setBounds(1150, 330, 200, 30);
+        editarMaquinaria.setBounds(1150, 320, 200, 30);
         Font fontEditar = new Font("Arial", Font.BOLD, 20);
         editarMaquinaria.setFont(fontAgregar);
         editarMaquinaria.setBorder(new ComponenteBotonRedondo(50));
