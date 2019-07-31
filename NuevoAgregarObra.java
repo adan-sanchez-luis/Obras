@@ -638,6 +638,7 @@ public class NuevoAgregarObra extends JFrame {
                         list.setSelectedIndex(i);
                         //se recuperan los datos de la fila de maquinas a agregar
                         String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                        filaLista[0]=filaLista[0].equals("MontaCargas")?"Monta Cargas":filaLista[0];
                         //numero de maquinas a agregar del mismo tipo y modelo
                         int repeticiones = Integer.parseInt(filaLista[2]);
                         //veces que se va a repetir la accion para agregar una maquina del mismo tipo y modelo
@@ -666,6 +667,8 @@ public class NuevoAgregarObra extends JFrame {
                             repeticion++;
                         }
                     }
+                    JOptionPane.showMessageDialog(null, "Se guardo la informacion correctamente");
+                    dispose();
                 } catch (SQLException ex) {
                     Logger.getLogger(NuevoAgregarObra.class.getName()).log(Level.SEVERE, null, ex);
                 }

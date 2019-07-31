@@ -254,6 +254,7 @@ public class PrincipalOriginal extends JFrame {
                     } catch (Exception ex) {
                         System.err.println("Error al eliminar " + ex);
                     }
+                    JOptionPane.showMessageDialog(null, "Se elimino el registro");
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Seleccione un registro");
                 }

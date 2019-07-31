@@ -621,66 +621,71 @@ public class EditarObra extends JFrame {
         AgregarInformaciónEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                //se establece el formato de la fecha que acepta la base de datos
-                SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
-                String consultaCliente = "SELECT * FROM CLIENTE WHERE NOMBRE_CLIENTE = '" + clienteCEditado.getSelectedItem() + "'";
-                //se recupera el id del cliente
-                int idCliente = Integer.parseInt(recuperarDato(consultaCliente, "IDCLIENTE"));
-                String auxNumeroEdit = NumtxtEditar.getText().equals("S/N") ? "\"S/N\"" : NumtxtEditar.getText();
-                //consulta que actualiza los datos
-                String EditarObra = "UPDATE OBRA SET "
-                        + "NOMBRE_OBRA='" + NombreObraEditartxt.getText() + "',NOMBRE_CLIENTE='" + clienteCEditado.getSelectedItem()
-                        + "',NOMBRE_RESPONSABLE='" + NombreResponsabletxtEditar.getText() + "',AP_PAT='" + ApellidoResponsablePaternotxtEditar.getText()
-                        + "',AP_MAT='" + ApellidoResponsableMaternotxtEditar.getText() + "',CALLE_OBRA='" + CalletxtEditar.getText()
-                        + "',NUMERO_CALLE=" + auxNumeroEdit + ",COLONIA='" + ColtxtEditar.getText() + "',MUNICIPIO='" + MunicipiotxtEditar.getText()
-                        + "',CP=" + cptxt.getText() + ",ESTADO='" + EstadotxtEditar.getText() + "',FECHA_INICIO='" + ff.format(FechaIEditar.getDate())
-                        + "',FECHA_FIN='" + ff.format(FechaFEditar.getDate()) + "',INVERSION=" + MontotxtEditar.getText() + ",TELEFONO_RESP=" + TelefonotxtEditar.getText()
-                        + ",CORREO_RESP='" + CorreotxtEditar.getText() + "',IDCLIENTE=" + idCliente
-                        + " where CLAVE_OBRA=" + id_Obra;
                 try {
-                    Statement stmt = (Statement) conexion.createStatement();
-                    stmt.executeUpdate(EditarObra);
-                } catch (SQLException ex) {
-                    System.err.println("Error al insertar " + ex);
-                }
-                //se recorre la lista de maquinas a agregar
-                for (int i = 0; i < lista.size(); i++) {
-                    list.setSelectedIndex(i);
-                    //se recuperan los datos de la fila de maquinas a agregar
-                    String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
-                    //numero de maquinas a agregar del mismo tipo y modelo
-                    int repeticiones = Integer.parseInt(filaLista[2]);
-                    //veces que se va a repetir la accion para agregar una maquina del mismo tipo y modelo
-                    int repeticion = 1;
-                    while (repeticion <= repeticiones) {
-                        try {
-                            //consulta para recuperar el id de la maquina
-                            String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
-                                    + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
-                            int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));
-                            //se agrega a la base de datos la relacion de que maquina esta opocuapada en la obra
-                            PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
-                            psd2.setString(1, String.valueOf(idMaquina));
-                            psd2.setString(2, String.valueOf(id_Obra));
-                            int res2 = psd2.executeUpdate();
-                            if (res2 < 0) {
-                                JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
-                            }
-                            //consulta para actualizar el estado de la maquina 
-                            String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
+                    //se establece el formato de la fecha que acepta la base de datos
+                    SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
+                    String consultaCliente = "SELECT * FROM CLIENTE WHERE NOMBRE_CLIENTE = '" + clienteCEditado.getSelectedItem() + "'";
+                    //se recupera el id del cliente
+                    int idCliente = Integer.parseInt(recuperarDato(consultaCliente, "IDCLIENTE"));
+                    String auxNumeroEdit = NumtxtEditar.getText().equals("S/N") ? "\"S/N\"" : NumtxtEditar.getText();
+                    //consulta que actualiza los datos
+                    String EditarObra = "UPDATE OBRA SET "
+                            + "NOMBRE_OBRA='" + NombreObraEditartxt.getText() + "',NOMBRE_CLIENTE='" + clienteCEditado.getSelectedItem()
+                            + "',NOMBRE_RESPONSABLE='" + NombreResponsabletxtEditar.getText() + "',AP_PAT='" + ApellidoResponsablePaternotxtEditar.getText()
+                            + "',AP_MAT='" + ApellidoResponsableMaternotxtEditar.getText() + "',CALLE_OBRA='" + CalletxtEditar.getText()
+                            + "',NUMERO_CALLE=" + auxNumeroEdit + ",COLONIA='" + ColtxtEditar.getText() + "',MUNICIPIO='" + MunicipiotxtEditar.getText()
+                            + "',CP=" + cptxt.getText() + ",ESTADO='" + EstadotxtEditar.getText() + "',FECHA_INICIO='" + ff.format(FechaIEditar.getDate())
+                            + "',FECHA_FIN='" + ff.format(FechaFEditar.getDate()) + "',INVERSION=" + MontotxtEditar.getText() + ",TELEFONO_RESP=" + TelefonotxtEditar.getText()
+                            + ",CORREO_RESP='" + CorreotxtEditar.getText() + "',IDCLIENTE=" + idCliente
+                            + " where CLAVE_OBRA=" + id_Obra;
+                    try {
+                        Statement stmt = (Statement) conexion.createStatement();
+                        stmt.executeUpdate(EditarObra);
+                    } catch (SQLException ex) {
+                        System.err.println("Error al insertar " + ex);
+                    }
+                    //se recorre la lista de maquinas a agregar
+                    for (int i = 0; i < lista.size(); i++) {
+                        list.setSelectedIndex(i);
+                        //se recuperan los datos de la fila de maquinas a agregar
+                        String filaLista[] = list.getSelectedValue().replaceAll(" ", "").split("/");
+                        filaLista[0]=filaLista[0].equals("MontaCargas")?"Monta Cargas":filaLista[0];
+                        //numero de maquinas a agregar del mismo tipo y modelo
+                        int repeticiones = Integer.parseInt(filaLista[2]);
+                        //veces que se va a repetir la accion para agregar una maquina del mismo tipo y modelo
+                        int repeticion = 1;
+                        while (repeticion <= repeticiones) {
                             try {
-                                Statement stmt = (Statement) conexion.createStatement();
-                                stmt.executeUpdate(actualizarEstado);
+                                //consulta para recuperar el id de la maquina
+                                String recuperarIdMaquina = "SELECT * FROM Maquinaria WHERE TIPO_MAQ = '" + filaLista[0]
+                                        + "' AND MODELO_MAQ = " + filaLista[1] + " AND ESTADO_MAQ = 'DISPONIBLE' ";
+                                int idMaquina = Integer.parseInt(recuperarDato(recuperarIdMaquina, "CLAVE_MAQ"));
+                                //se agrega a la base de datos la relacion de que maquina esta opocuapada en la obra
+                                PreparedStatement psd2 = conexion.prepareStatement("INSERT INTO OBRA_MAQ_INSUMO (CLAVE_MAQ,CLAVE_OBRA) VALUES(?,?)");
+                                psd2.setString(1, String.valueOf(idMaquina));
+                                psd2.setString(2, String.valueOf(id_Obra));
+                                int res2 = psd2.executeUpdate();
+                                if (res2 < 0) {
+                                    JOptionPane.showMessageDialog(null, "No se pudo añadir el registro");
+                                }
+                                //consulta para actualizar el estado de la maquina 
+                                String actualizarEstado = "UPDATE Maquinaria SET ESTADO_MAQ= 'EN USO' where CLAVE_MAQ=" + idMaquina;
+                                try {
+                                    Statement stmt = (Statement) conexion.createStatement();
+                                    stmt.executeUpdate(actualizarEstado);
+                                } catch (SQLException ex) {
+                                    System.err.println("Error al insertar " + ex);
+                                }
+                                repeticion++;
                             } catch (SQLException ex) {
-                                System.err.println("Error al insertar " + ex);
+                                Logger.getLogger(EditarObra.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                            repeticion++;
-                        } catch (SQLException ex) {
-                            Logger.getLogger(EditarObra.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+                    JOptionPane.showMessageDialog(null, "Se actualizo la informacion");
+                    dispose();
+                } catch (Exception a) {
                 }
-
             }
         });
 
